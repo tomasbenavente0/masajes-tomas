@@ -2,7 +2,6 @@ import { createClient } from '@/lib/supabase-server'
 import PublicNav from '@/components/PublicNav'
 import ServicesSection from '@/components/ServicesSection'
 import AvailabilitySection from '@/components/AvailabilitySection'
-import ComingSoon from '@/components/ComingSoon'
 import { whatsappLink, parseBenefits } from '@/lib/utils'
 import { MapPin, MessageCircle, Sparkles, HeartPulse, Moon, Activity } from 'lucide-react'
 import type { City, Service, ServiceAvailability, AvailabilitySlot, SiteSetting } from '@/lib/types'
@@ -24,36 +23,17 @@ export default async function HomePage() {
     { data: availability },
     { data: slots },
     { data: settings },
-    { data: { user } },
   ] = await Promise.all([
     supabase.from('cities').select('*').order('display_order'),
     supabase.from('services').select('*').order('display_order'),
     supabase.from('service_availability').select('*'),
     supabase.from('availability_slots').select('*').gte('slot_date', new Date().toISOString().slice(0, 10)),
     supabase.from('site_settings').select('*'),
-    supabase.auth.getUser(),
   ])
 
   const cfg = settingsMap((settings as SiteSetting[]) ?? [])
   const whatsapp = cfg.whatsapp_number || '56900000000'
   const businessName = cfg.business_name || 'Masajes Tomás'
-  const isPublished = cfg.site_published === 'true'
-
-  // Si el sitio no está publicado y quien mira no está autenticado (no eres tú),
-  // se muestra la página "próximamente".
-  if (!isPublished && !user) {
-    return (
-      <ComingSoon
-        businessName={businessName}
-        title={cfg.coming_soon_title || 'Muy pronto'}
-        text={
-          cfg.coming_soon_text ||
-          'Estamos preparando algo especial para tu bienestar.'
-        }
-        whatsappNumber={whatsapp}
-      />
-    )
-  }
 
   const heroMsg = 'Hola! Vengo desde tu sitio web y quiero agendar un masaje.'
 
@@ -66,12 +46,6 @@ export default async function HomePage() {
 
   return (
     <main id="top">
-      {!isPublished && user && (
-        <div className="bg-amber-100 text-amber-900 text-sm text-center py-2 px-4">
-          Modo privado: el público ve la página “próximamente”. Publica el sitio
-          desde el panel cuando estés listo.
-        </div>
-      )}
       <PublicNav businessName={businessName} />
 
       {/* HERO */}

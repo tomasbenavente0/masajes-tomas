@@ -1,8 +1,8 @@
 'use client'
 
 import type { City, SiteSetting } from '@/lib/types'
-import { toggleCity, saveSettings, toggleSitePublished } from '@/app/admin/actions'
-import { MapPin, Globe, EyeOff } from 'lucide-react'
+import { toggleCity, saveSettings } from '@/app/admin/actions'
+import { MapPin } from 'lucide-react'
 
 export function CitiesManager({ cities }: { cities: City[] }) {
   return (
@@ -60,59 +60,11 @@ export function SettingsManager({
   const get = (k: string) =>
     settings.find((s) => s.key === k)?.value ?? ''
 
-  const isPublished = get('site_published') === 'true'
-
   return (
     <div>
       <h2 className="font-display text-2xl text-ink mb-6">
         Información del sitio
       </h2>
-
-      {/* Estado de publicación */}
-      <div className="bg-cream rounded-xl p-5 border border-ink/5 mb-8">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div
-              className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                isPublished ? 'bg-sage/15' : 'bg-amber-100'
-              }`}
-            >
-              {isPublished ? (
-                <Globe size={20} className="text-sage-dark" />
-              ) : (
-                <EyeOff size={20} className="text-amber-700" />
-              )}
-            </div>
-            <div>
-              <p className="font-500 text-ink">
-                {isPublished ? 'Sitio publicado' : 'Modo privado'}
-              </p>
-              <p className="text-sm text-clay">
-                {isPublished
-                  ? 'Cualquier persona puede ver tu sitio completo.'
-                  : 'El público ve la página “próximamente”. Solo tú ves el sitio real.'}
-              </p>
-            </div>
-          </div>
-          <form action={toggleSitePublished}>
-            <input
-              type="hidden"
-              name="publish"
-              value={(!isPublished).toString()}
-            />
-            <button
-              type="submit"
-              className={`px-5 py-2.5 rounded-lg font-500 text-sm whitespace-nowrap ${
-                isPublished
-                  ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-                  : 'bg-sage text-cream hover:bg-sage-dark'
-              }`}
-            >
-              {isPublished ? 'Pasar a privado' : 'Publicar sitio'}
-            </button>
-          </form>
-        </div>
-      </div>
 
       <form action={saveSettings} className="space-y-4 max-w-xl">
         <SField label="Nombre del negocio" name="business_name" value={get('business_name')} />
@@ -122,29 +74,7 @@ export function SettingsManager({
           value={get('whatsapp_number')}
         />
 
-        <div className="border-t border-ink/10 pt-4 mt-2">
-          <p className="text-xs uppercase tracking-wide text-clay mb-3 font-500">
-            Página “próximamente” (modo privado)
-          </p>
-          <SField label="Título" name="coming_soon_title" value={get('coming_soon_title')} />
-          <div className="mt-4">
-            <label className="block text-xs uppercase tracking-wide text-clay mb-1.5">
-              Texto
-            </label>
-            <textarea
-              name="coming_soon_text"
-              defaultValue={get('coming_soon_text')}
-              rows={2}
-              className="input"
-            />
-          </div>
-        </div>
-
-        <div className="border-t border-ink/10 pt-4 mt-2">
-          <p className="text-xs uppercase tracking-wide text-clay mb-3 font-500">
-            Sitio publicado
-          </p>
-        </div>
+        <div className="border-t border-ink/10 pt-4 mt-2" />
         <SField label="Título principal (hero)" name="hero_title" value={get('hero_title')} />
         <SField label="Subtítulo (hero)" name="hero_subtitle" value={get('hero_subtitle')} />
         <div>

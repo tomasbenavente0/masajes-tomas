@@ -147,19 +147,6 @@ export async function saveSettings(formData: FormData) {
   refresh()
 }
 
-// ---------- PUBLICAR / DESPUBLICAR SITIO ----------
-export async function toggleSitePublished(formData: FormData) {
-  const supabase = await requireAuth()
-  const publish = formData.get('publish') === 'true'
-  await supabase
-    .from('site_settings')
-    .upsert(
-      { key: 'site_published', value: publish ? 'true' : 'false' },
-      { onConflict: 'key' }
-    )
-  refresh()
-}
-
 // ---------- LOGOUT ----------
 export async function signOut() {
   const supabase = createClient()
