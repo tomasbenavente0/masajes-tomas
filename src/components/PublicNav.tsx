@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Menu, X, MessageCircle } from 'lucide-react'
+import { Menu, X, MessageCircle, Lock } from 'lucide-react'
 import { whatsappLink } from '@/lib/utils'
 
 export default function PublicNav({
@@ -61,6 +61,14 @@ export default function PublicNav({
             </a>
           ))}
           <a
+            href="/admin/login"
+            className="flex items-center gap-1.5 text-sm text-clay hover:text-terra-dark transition-colors"
+            title="Acceso del administrador"
+          >
+            <Lock size={14} />
+            Admin
+          </a>
+          <a
             href={whatsappLink(whatsappNumber, navMsg)}
             target="_blank"
             rel="noopener noreferrer"
@@ -102,6 +110,14 @@ export default function PublicNav({
             >
               <MessageCircle size={16} />
               Reservar por WhatsApp
+            </a>
+            <a
+              href="/admin/login"
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-center gap-1.5 text-sm text-clay hover:text-terra-dark pt-1"
+            >
+              <Lock size={14} />
+              Acceso administrador
             </a>
           </div>
         </div>

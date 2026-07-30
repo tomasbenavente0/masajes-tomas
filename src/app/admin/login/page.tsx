@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-client'
-import { Lock } from 'lucide-react'
+import { Lock, ArrowLeft } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -30,9 +30,17 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-sand px-6">
       <div className="w-full max-w-sm">
-        <div className="bg-cream rounded-2xl p-8 border border-ink/5">
-          <div className="w-12 h-12 rounded-xl bg-sage/15 flex items-center justify-center mb-6">
-            <Lock size={22} className="text-sage-dark" />
+        <a
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm text-clay hover:text-terra-dark mb-5 transition-colors"
+        >
+          <ArrowLeft size={15} />
+          Volver al sitio
+        </a>
+
+        <div className="bg-cream rounded-4xl p-8 border border-ink/5 shadow-soft">
+          <div className="w-12 h-12 rounded-2xl bg-terra-soft flex items-center justify-center mb-6">
+            <Lock size={22} className="text-terra-dark" />
           </div>
           <h1 className="font-display text-2xl text-ink mb-1">
             Panel de administración
@@ -51,7 +59,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 rounded-lg border border-ink/10 bg-sand focus:outline-none focus:border-sage"
+                className="w-full px-4 py-2.5 rounded-lg border border-ink/10 bg-sand focus:outline-none focus:border-terra"
                 placeholder="tu@correo.cl"
               />
             </div>
@@ -64,7 +72,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 rounded-lg border border-ink/10 bg-sand focus:outline-none focus:border-sage"
+                className="w-full px-4 py-2.5 rounded-lg border border-ink/10 bg-sand focus:outline-none focus:border-terra"
                 placeholder="••••••••"
               />
             </div>
