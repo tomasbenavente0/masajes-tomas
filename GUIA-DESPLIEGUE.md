@@ -128,7 +128,7 @@ instante.
 
 ## Seguridad
 
-- Cambia la contraseña `tomas1234` que mencionaste en el chat por una robusta.
+- Usa una contraseña robusta y única para el usuario admin de Supabase.
 - La base de datos tiene Row Level Security: el público solo puede **leer**;
   solo tú (autenticado) puedes modificar.
 - Nunca compartas tu archivo `.env.local` ni subas credenciales a GitHub
