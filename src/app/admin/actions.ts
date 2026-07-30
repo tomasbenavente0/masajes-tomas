@@ -130,11 +130,12 @@ export async function saveSettings(formData: FormData) {
   const keys = [
     'business_name',
     'whatsapp_number',
-    'coming_soon_title',
-    'coming_soon_text',
     'hero_title',
     'hero_subtitle',
+    'hero_image_url',
     'about_text',
+    'about_image_url',
+    'booking_url',
     'email',
     'instagram_url',
   ]

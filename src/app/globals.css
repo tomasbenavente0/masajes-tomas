@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,14 +6,66 @@
 :root { color-scheme: light; }
 html { scroll-behavior: smooth; }
 body {
-  background: #F4F1EA;
-  color: #1C1917;
+  background: #F7EFE6;
+  color: #2B2019;
   font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer components {
   .container-tight { @apply max-w-6xl mx-auto px-6; }
+
   .input {
     @apply w-full px-3.5 py-2.5 rounded-lg border border-ink/10 bg-sand text-ink text-sm focus:outline-none focus:border-sage;
+  }
+
+  /* Etiqueta de sección: "SERVICIOS", "BENEFICIOS", etc. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-terra font-600;
+  }
+
+  /* Botones */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-terra text-cream px-7 py-3.5 rounded-full font-500
+           shadow-soft hover:bg-terra-dark hover:shadow-lift hover:-translate-y-0.5
+           transition-all duration-300;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 bg-cream/80 backdrop-blur border border-ink/10 text-ink
+           px-7 py-3.5 rounded-full font-500 hover:border-terra hover:text-terra-dark hover:-translate-y-0.5
+           transition-all duration-300;
+  }
+
+  /* Píldoras de filtro (ciudad / modalidad) */
+  .pill {
+    @apply flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-500 transition-all duration-200;
+  }
+  .pill-on { @apply bg-terra text-cream shadow-soft; }
+  .pill-off { @apply bg-cream text-clay hover:bg-terra-soft hover:text-terra-dark; }
+
+  .card {
+    @apply bg-cream rounded-4xl border border-ink/5 shadow-soft;
+  }
+}
+
+@layer utilities {
+  /* Manchas orgánicas decorativas del fondo */
+  .blob {
+    @apply absolute rounded-full blur-3xl pointer-events-none;
+  }
+  /* Retardos para que las secciones entren en cascada */
+  .delay-1 { animation-delay: 0.08s; }
+  .delay-2 { animation-delay: 0.16s; }
+  .delay-3 { animation-delay: 0.24s; }
+  .delay-4 { animation-delay: 0.32s; }
+}
+
+/* Respeta a quien prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

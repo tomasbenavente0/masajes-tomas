@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Clock, MapPin, Home, Check } from 'lucide-react'
+import { Clock, MapPin, Home, Check, MessageCircle, Sparkles } from 'lucide-react'
 import type { City, Service, ServiceAvailability } from '@/lib/types'
 import { formatCLP, parseBenefits, whatsappLink } from '@/lib/utils'
 
@@ -41,31 +41,34 @@ export default function ServicesSection({
   const selectedCity = cities.find((c) => c.id === cityId)
 
   return (
-    <section id="servicios" className="py-20 bg-cream">
-      <div className="container-tight">
-        <p className="text-sm uppercase tracking-widest text-sage font-500 mb-3">
+    <section id="servicios" className="relative py-24 bg-cream overflow-hidden">
+      <div className="blob w-[28rem] h-[28rem] bg-honey/15 -top-32 -right-24" />
+
+      <div className="container-tight relative">
+        <p className="eyebrow mb-4">
+          <span className="w-6 h-px bg-terra" />
           Servicios
         </p>
-        <h2 className="font-display text-4xl md:text-5xl text-ink mb-8 max-w-2xl">
-          Elige tu masaje, tu ciudad y modalidad
+        <h2 className="font-display text-4xl md:text-5xl text-ink mb-4 max-w-2xl leading-tight">
+          Elige tu masaje, tu ciudad y tu modalidad
         </h2>
+        <p className="text-clay mb-12 max-w-xl leading-relaxed">
+          Los precios ya incluyen el traslado cuando eliges atención a
+          domicilio.
+        </p>
 
         {/* Filtros */}
-        <div className="flex flex-wrap gap-6 mb-12">
+        <div className="flex flex-wrap gap-8 mb-14">
           <div>
-            <label className="block text-xs uppercase tracking-wide text-clay mb-2">
+            <label className="block text-xs uppercase tracking-[0.15em] text-clay mb-3 font-500">
               Ciudad
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {activeCities.map((c) => (
                 <button
                   key={c.id}
                   onClick={() => setCityId(c.id)}
-                  className={`px-5 py-2.5 rounded-full text-sm font-500 transition-colors ${
-                    cityId === c.id
-                      ? 'bg-sage text-cream'
-                      : 'bg-sand text-clay hover:bg-sage-light/30'
-                  }`}
+                  className={`pill ${cityId === c.id ? 'pill-on' : 'pill-off'}`}
                 >
                   {c.name}
                 </button>
@@ -79,26 +82,22 @@ export default function ServicesSection({
           </div>
 
           <div>
-            <label className="block text-xs uppercase tracking-wide text-clay mb-2">
+            <label className="block text-xs uppercase tracking-[0.15em] text-clay mb-3 font-500">
               Modalidad
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setModality('local')}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-500 transition-colors ${
-                  modality === 'local'
-                    ? 'bg-sage text-cream'
-                    : 'bg-sand text-clay hover:bg-sage-light/30'
+                className={`pill ${
+                  modality === 'local' ? 'pill-on' : 'pill-off'
                 }`}
               >
                 <MapPin size={16} /> En local
               </button>
               <button
                 onClick={() => setModality('domicilio')}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-500 transition-colors ${
-                  modality === 'domicilio'
-                    ? 'bg-sage text-cream'
-                    : 'bg-sand text-clay hover:bg-sage-light/30'
+                className={`pill ${
+                  modality === 'domicilio' ? 'pill-on' : 'pill-off'
                 }`}
               >
                 <Home size={16} /> A domicilio
@@ -109,14 +108,15 @@ export default function ServicesSection({
 
         {/* Grilla de servicios */}
         {visibleServices.length === 0 ? (
-          <div className="bg-sand rounded-2xl p-12 text-center">
-            <p className="text-clay">
+          <div className="card p-14 text-center">
+            <Sparkles className="mx-auto text-terra mb-4" size={32} />
+            <p className="text-clay max-w-md mx-auto">
               No hay servicios disponibles en {selectedCity?.name} bajo esta
               modalidad por ahora. Prueba otra opción o escríbeme por WhatsApp.
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
             {visibleServices.map(({ service, surcharge }) => {
               const basePrice = service.promo_price ?? service.price
               const finalPrice = basePrice + surcharge
@@ -127,79 +127,79 @@ export default function ServicesSection({
               return (
                 <article
                   key={service.id}
-                  className="bg-sand rounded-2xl overflow-hidden border border-ink/5 flex flex-col"
+                  className="group card overflow-hidden flex flex-col hover:shadow-lift hover:-translate-y-1.5 transition-all duration-300"
                 >
-                  {service.image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={service.image_url}
-                      alt={service.name}
-                      className="h-40 w-full object-cover"
-                    />
-                  ) : (
-                    <div className="h-40 w-full bg-gradient-to-br from-sage-light/40 to-sage/30" />
-                  )}
+                  <div className="relative h-44 overflow-hidden">
+                    {service.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={service.image_url}
+                        alt={service.name}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gradient-to-br from-terra-light via-honey to-sage-light transition-transform duration-500 group-hover:scale-105" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/25 to-transparent" />
 
-                  <div className="p-6 flex flex-col flex-1">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="font-display text-xl text-ink">
-                        {service.name}
-                      </h3>
-                      {hasPromo && service.promo_label && (
-                        <span className="shrink-0 text-xs bg-sage text-cream px-2 py-1 rounded-full">
-                          {service.promo_label}
-                        </span>
-                      )}
-                    </div>
+                    {hasPromo && service.promo_label && (
+                      <span className="absolute top-4 left-4 text-xs font-600 bg-cream text-terra-dark px-3 py-1.5 rounded-full shadow-soft">
+                        {service.promo_label}
+                      </span>
+                    )}
+
+                    <span className="absolute bottom-4 right-4 flex items-center gap-1.5 text-xs text-cream bg-ink/45 backdrop-blur px-3 py-1.5 rounded-full">
+                      <Clock size={13} />
+                      {service.duration_minutes} min
+                    </span>
+                  </div>
+
+                  <div className="p-7 flex flex-col flex-1">
+                    <h3 className="font-display text-2xl text-ink mb-2.5">
+                      {service.name}
+                    </h3>
 
                     {service.description && (
-                      <p className="text-sm text-clay mb-4">
+                      <p className="text-sm text-clay mb-5 leading-relaxed">
                         {service.description}
                       </p>
                     )}
 
                     {benefits.length > 0 && (
-                      <ul className="space-y-1.5 mb-5">
+                      <ul className="space-y-2 mb-6">
                         {benefits.slice(0, 4).map((b, i) => (
                           <li
                             key={i}
-                            className="flex items-center gap-2 text-sm text-ink/80"
+                            className="flex items-start gap-2.5 text-sm text-ink/75"
                           >
-                            <Check size={15} className="text-sage shrink-0" />
+                            <span className="w-4 h-4 rounded-full bg-terra-soft flex items-center justify-center shrink-0 mt-0.5">
+                              <Check size={11} className="text-terra-dark" />
+                            </span>
                             {b}
                           </li>
                         ))}
                       </ul>
                     )}
 
-                    <div className="mt-auto">
-                      <div className="flex items-center gap-2 text-sm text-clay mb-3">
-                        <Clock size={15} />
-                        {service.duration_minutes} min
-                        {surcharge > 0 && (
-                          <span className="text-xs">
-                            · incluye traslado
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-baseline gap-2 mb-4">
+                    <div className="mt-auto pt-5 border-t border-ink/5">
+                      <div className="flex items-baseline gap-2.5 mb-5">
+                        <span className="font-display text-3xl text-ink">
+                          {formatCLP(finalPrice)}
+                        </span>
                         {hasPromo && (
                           <span className="text-sm text-clay line-through">
                             {formatCLP(service.price + surcharge)}
                           </span>
                         )}
-                        <span className="font-display text-2xl text-ink">
-                          {formatCLP(finalPrice)}
-                        </span>
                       </div>
 
                       <a
                         href={whatsappLink(whatsappNumber, msg)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block text-center bg-ink text-cream py-3 rounded-xl text-sm font-500 hover:bg-ink/90 transition-colors"
+                        className="flex items-center justify-center gap-2 bg-ink text-cream py-3.5 rounded-full text-sm font-500 hover:bg-terra transition-colors"
                       >
+                        <MessageCircle size={16} />
                         Reservar por WhatsApp
                       </a>
                     </div>

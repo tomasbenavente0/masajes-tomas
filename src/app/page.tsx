@@ -2,9 +2,28 @@ import { createClient } from '@/lib/supabase-server'
 import PublicNav from '@/components/PublicNav'
 import ServicesSection from '@/components/ServicesSection'
 import AvailabilitySection from '@/components/AvailabilitySection'
-import { whatsappLink, parseBenefits } from '@/lib/utils'
-import { MapPin, MessageCircle, Sparkles, HeartPulse, Moon, Activity } from 'lucide-react'
-import type { City, Service, ServiceAvailability, AvailabilitySlot, SiteSetting } from '@/lib/types'
+import Reveal from '@/components/Reveal'
+import WhatsappFab from '@/components/WhatsappFab'
+import { whatsappLink } from '@/lib/utils'
+import {
+  MapPin,
+  MessageCircle,
+  Sparkles,
+  HeartPulse,
+  Moon,
+  Activity,
+  Home,
+  Clock,
+  Instagram,
+  Mail,
+} from 'lucide-react'
+import type {
+  City,
+  Service,
+  ServiceAvailability,
+  AvailabilitySlot,
+  SiteSetting,
+} from '@/lib/types'
 
 export const revalidate = 60 // refresca datos cada 60s
 
@@ -27,64 +46,170 @@ export default async function HomePage() {
     supabase.from('cities').select('*').order('display_order'),
     supabase.from('services').select('*').order('display_order'),
     supabase.from('service_availability').select('*'),
-    supabase.from('availability_slots').select('*').gte('slot_date', new Date().toISOString().slice(0, 10)),
+    supabase
+      .from('availability_slots')
+      .select('*')
+      .gte('slot_date', new Date().toISOString().slice(0, 10)),
     supabase.from('site_settings').select('*'),
   ])
 
   const cfg = settingsMap((settings as SiteSetting[]) ?? [])
   const whatsapp = cfg.whatsapp_number || '56900000000'
   const businessName = cfg.business_name || 'Masajes Tomás'
+  const heroImage = cfg.hero_image_url || ''
+  const aboutImage = cfg.about_image_url || ''
+
+  const activeCities = ((cities as City[]) ?? []).filter((c) => c.is_active)
+  const cityNames = activeCities.map((c) => c.name).join(' y ')
 
   const heroMsg = 'Hola! Vengo desde tu sitio web y quiero agendar un masaje.'
 
   const benefitCards = [
-    { icon: HeartPulse, title: 'Alivia el estrés', text: 'Reduce cortisol y tensión acumulada, dejándote en calma.' },
-    { icon: Activity, title: 'Libera músculos', text: 'Deshace contracturas y mejora tu rango de movimiento.' },
-    { icon: Moon, title: 'Mejora el sueño', text: 'Un cuerpo relajado descansa mejor y se recupera más rápido.' },
-    { icon: Sparkles, title: 'Renueva energía', text: 'Activa la circulación y te devuelve la vitalidad.' },
+    {
+      icon: HeartPulse,
+      title: 'Alivia el estrés',
+      text: 'Reduce el cortisol y la tensión acumulada, dejándote en calma profunda.',
+    },
+    {
+      icon: Activity,
+      title: 'Libera músculos',
+      text: 'Deshace contracturas y devuelve tu rango natural de movimiento.',
+    },
+    {
+      icon: Moon,
+      title: 'Mejora el sueño',
+      text: 'Un cuerpo relajado descansa mejor y se recupera más rápido.',
+    },
+    {
+      icon: Sparkles,
+      title: 'Renueva energía',
+      text: 'Activa la circulación y te devuelve la vitalidad del día a día.',
+    },
   ]
 
   return (
-    <main id="top">
-      <PublicNav businessName={businessName} />
+    <main id="top" className="overflow-x-hidden">
+      <PublicNav businessName={businessName} whatsappNumber={whatsapp} />
 
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="container-tight py-24 md:py-32">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-cream border border-ink/10 rounded-full px-4 py-1.5 mb-6">
-              <MapPin size={15} className="text-sage" />
-              <span className="text-sm text-clay">Concepción y Parral</span>
+      {/* ---------------- HERO ---------------- */}
+      <section className="relative -mt-[73px] pt-[73px] overflow-hidden">
+        {/* Fondo cálido con manchas orgánicas */}
+        <div className="absolute inset-0 bg-gradient-to-b from-terra-soft via-sand to-sand" />
+        <div className="blob w-[38rem] h-[38rem] bg-terra/20 -top-40 -right-32 animate-float" />
+        <div
+          className="blob w-[26rem] h-[26rem] bg-honey/25 top-52 -left-24 animate-float"
+          style={{ animationDelay: '2s' }}
+        />
+        <div
+          className="blob w-[20rem] h-[20rem] bg-sage/20 bottom-0 right-1/4 animate-float"
+          style={{ animationDelay: '4s' }}
+        />
+
+        <div className="container-tight relative py-20 md:py-28">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-14 items-center">
+            {/* Texto */}
+            <div className="animate-fade-up">
+              <div className="inline-flex items-center gap-2 bg-cream/80 backdrop-blur border border-terra/20 rounded-full px-4 py-1.5 mb-7 shadow-soft">
+                <MapPin size={15} className="text-terra" />
+                <span className="text-sm text-ink/80">
+                  {cityNames || 'Concepción y Parral'}
+                </span>
+              </div>
+
+              <h1 className="font-display text-[2.75rem] leading-[1.05] sm:text-6xl md:text-7xl text-ink mb-6">
+                {cfg.hero_title || 'Bienestar y relajación a tu alcance'}
+              </h1>
+
+              <p className="text-lg md:text-xl text-clay mb-10 max-w-xl leading-relaxed">
+                {cfg.hero_subtitle ||
+                  'Masajes terapéuticos profesionales, en tu hogar o en mi local.'}
+              </p>
+
+              <div className="flex flex-wrap gap-4 mb-12">
+                <a
+                  href={whatsappLink(whatsapp, heroMsg)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary"
+                >
+                  <MessageCircle size={18} />
+                  Reservar por WhatsApp
+                </a>
+                <a href="#servicios" className="btn-ghost">
+                  Ver servicios
+                </a>
+              </div>
+
+              {/* Fila de confianza */}
+              <div className="flex flex-wrap gap-x-8 gap-y-4">
+                {[
+                  { icon: Home, label: 'En local o a domicilio' },
+                  { icon: Clock, label: 'Sesiones de 60 a 75 min' },
+                  { icon: Sparkles, label: 'Atención personalizada' },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex items-center gap-2.5 text-sm text-clay"
+                  >
+                    <span className="w-8 h-8 rounded-full bg-cream border border-ink/5 flex items-center justify-center shrink-0">
+                      <item.icon size={15} className="text-terra" />
+                    </span>
+                    {item.label}
+                  </div>
+                ))}
+              </div>
             </div>
-            <h1 className="font-display text-5xl md:text-7xl leading-[1.05] text-ink mb-6">
-              {cfg.hero_title || 'Bienestar y relajación a tu alcance'}
-            </h1>
-            <p className="text-lg md:text-xl text-clay mb-10 max-w-2xl">
-              {cfg.hero_subtitle ||
-                'Masajes terapéuticos profesionales, en tu hogar o en mi local.'}
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <a
-                href="#servicios"
-                className="bg-ink text-cream px-7 py-3.5 rounded-xl font-500 hover:bg-ink/90 transition-colors"
-              >
-                Ver servicios
-              </a>
-              <a
-                href={whatsappLink(whatsapp, heroMsg)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-cream border border-ink/10 text-ink px-7 py-3.5 rounded-xl font-500 hover:border-sage transition-colors"
-              >
-                <MessageCircle size={18} className="text-sage" />
-                Escribir por WhatsApp
-              </a>
+
+            {/* Imagen / composición visual */}
+            <div className="animate-fade-up delay-2 relative">
+              <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-lift">
+                {heroImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={heroImage}
+                    alt={`Masaje profesional en ${cityNames || 'Concepción'}`}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-terra-light via-honey to-sage-light">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Sparkles size={64} className="text-cream/60" />
+                    </div>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" />
+              </div>
+
+              {/* Tarjeta flotante */}
+              <div className="absolute -bottom-6 -left-4 sm:-left-8 bg-cream rounded-3xl shadow-lift px-6 py-5 border border-ink/5 max-w-[15rem]">
+                <p className="font-display text-3xl text-terra leading-none mb-1">
+                  {services?.length ?? 0}
+                </p>
+                <p className="text-sm text-clay leading-snug">
+                  masajes distintos para elegir según lo que tu cuerpo necesita
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Curva orgánica de transición */}
+        <div className="relative">
+          <svg
+            viewBox="0 0 1440 80"
+            preserveAspectRatio="none"
+            className="w-full h-12 md:h-20 block"
+            aria-hidden="true"
+          >
+            <path
+              d="M0,80 C240,10 480,10 720,42 C960,74 1200,74 1440,20 L1440,80 Z"
+              fill="#FDFAF6"
+            />
+          </svg>
+        </div>
       </section>
 
-      {/* SERVICIOS */}
+      {/* ---------------- SERVICIOS ---------------- */}
       <ServicesSection
         cities={(cities as City[]) ?? []}
         services={(services as Service[]) ?? []}
@@ -92,102 +217,152 @@ export default async function HomePage() {
         whatsappNumber={whatsapp}
       />
 
-      {/* BENEFICIOS */}
-      <section id="beneficios" className="py-20 bg-sand">
-        <div className="container-tight">
-          <p className="text-sm uppercase tracking-widest text-sage font-500 mb-3">
-            Por qué un masaje
-          </p>
-          <h2 className="font-display text-4xl md:text-5xl text-ink mb-12 max-w-2xl">
-            Beneficios que sientes desde la primera sesión
-          </h2>
+      {/* ---------------- BENEFICIOS ---------------- */}
+      <section id="beneficios" className="relative py-24 bg-sand overflow-hidden">
+        <div className="blob w-[30rem] h-[30rem] bg-terra/10 -bottom-40 -left-32" />
+        <div className="container-tight relative">
+          <Reveal>
+            <p className="eyebrow mb-4">
+              <span className="w-6 h-px bg-terra" />
+              Por qué un masaje
+            </p>
+            <h2 className="font-display text-4xl md:text-5xl text-ink mb-14 max-w-2xl leading-tight">
+              Beneficios que sientes desde la primera sesión
+            </h2>
+          </Reveal>
+
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {benefitCards.map((b) => (
-              <div
-                key={b.title}
-                className="bg-cream rounded-2xl p-6 border border-ink/5"
-              >
-                <div className="w-11 h-11 rounded-xl bg-sage/15 flex items-center justify-center mb-4">
-                  <b.icon size={22} className="text-sage-dark" />
+            {benefitCards.map((b, i) => (
+              <Reveal key={b.title} delay={i * 80}>
+                <div className="card h-full p-7 hover:shadow-lift hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-2xl bg-terra-soft flex items-center justify-center mb-5">
+                    <b.icon size={22} className="text-terra-dark" />
+                  </div>
+                  <h3 className="font-display text-xl text-ink mb-2">
+                    {b.title}
+                  </h3>
+                  <p className="text-sm text-clay leading-relaxed">{b.text}</p>
                 </div>
-                <h3 className="font-display text-lg text-ink mb-2">
-                  {b.title}
-                </h3>
-                <p className="text-sm text-clay">{b.text}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SOBRE MÍ */}
-      <section className="py-20 bg-cream">
-        <div className="container-tight grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <p className="text-sm uppercase tracking-widest text-sage font-500 mb-3">
+      {/* ---------------- SOBRE MÍ ---------------- */}
+      <section className="py-24 bg-cream">
+        <div className="container-tight grid md:grid-cols-2 gap-14 items-center">
+          <Reveal className="order-2 md:order-1">
+            <p className="eyebrow mb-4">
+              <span className="w-6 h-px bg-terra" />
               Sobre mí
             </p>
-            <h2 className="font-display text-4xl text-ink mb-6">
+            <h2 className="font-display text-4xl md:text-5xl text-ink mb-6 leading-tight">
               Cuidado profesional y cercano
             </h2>
-            <p className="text-clay leading-relaxed">
+            <p className="text-clay leading-relaxed text-lg mb-8">
               {cfg.about_text ||
                 'Con años de experiencia, ofrezco masajes personalizados que combinan técnica y cuidado para tu bienestar físico y mental.'}
             </p>
-          </div>
-          <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-sage-light/40 to-sage/30" />
+            <a
+              href={whatsappLink(
+                whatsapp,
+                'Hola! Quiero hacerte una consulta sobre tus masajes.'
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary"
+            >
+              <MessageCircle size={18} />
+              Conversemos
+            </a>
+          </Reveal>
+
+          <Reveal delay={120} className="order-1 md:order-2">
+            <div className="relative">
+              <div className="absolute -top-5 -right-5 w-28 h-28 rounded-full bg-honey/30 blur-2xl" />
+              <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-lift">
+                {aboutImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={aboutImage}
+                    alt={businessName}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-sage-light via-terra-soft to-honey/60" />
+                )}
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* DISPONIBILIDAD */}
+      {/* ---------------- DISPONIBILIDAD ---------------- */}
       <AvailabilitySection
         cities={(cities as City[]) ?? []}
         slots={(slots as AvailabilitySlot[]) ?? []}
         whatsappNumber={whatsapp}
+        bookingUrl={cfg.booking_url || ''}
       />
 
-      {/* CONTACTO / FOOTER */}
-      <footer id="contacto" className="bg-ink text-cream py-16">
-        <div className="container-tight">
-          <div className="grid md:grid-cols-2 gap-10">
+      {/* ---------------- CONTACTO / FOOTER ---------------- */}
+      <footer id="contacto" className="relative bg-ink text-cream overflow-hidden">
+        <div className="blob w-[32rem] h-[32rem] bg-terra/25 -top-40 -right-32" />
+        <div className="container-tight relative py-20">
+          <div className="grid md:grid-cols-2 gap-12">
             <div>
-              <h2 className="font-display text-3xl mb-4">{businessName}</h2>
-              <p className="text-cream/70 max-w-md mb-6">
-                Reserva tu sesión por WhatsApp. Atención en Concepción y Parral,
-                en local o a domicilio.
+              <h2 className="font-display text-4xl md:text-5xl mb-5 leading-tight">
+                ¿Listo para relajarte?
+              </h2>
+              <p className="text-cream/70 max-w-md mb-8 leading-relaxed">
+                Escríbeme por WhatsApp y coordinamos tu sesión. Atención en{' '}
+                {cityNames || 'Concepción y Parral'}, en local o a domicilio.
               </p>
               <a
                 href={whatsappLink(whatsapp, heroMsg)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-sage text-cream px-6 py-3 rounded-xl font-500 hover:bg-sage-dark transition-colors"
+                className="inline-flex items-center gap-2 bg-terra text-cream px-7 py-3.5 rounded-full font-500 hover:bg-terra-dark transition-colors shadow-lift"
               >
                 <MessageCircle size={18} />
                 Escribir por WhatsApp
               </a>
             </div>
-            <div className="md:text-right">
+
+            <div className="md:text-right space-y-4">
+              <p className="font-display text-2xl">{businessName}</p>
               {cfg.email && (
-                <p className="text-cream/70 mb-2">{cfg.email}</p>
+                <a
+                  href={`mailto:${cfg.email}`}
+                  className="flex md:justify-end items-center gap-2 text-cream/70 hover:text-cream transition-colors"
+                >
+                  <Mail size={16} />
+                  {cfg.email}
+                </a>
               )}
               {cfg.instagram_url && (
                 <a
                   href={cfg.instagram_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-cream/70 hover:text-cream"
+                  className="flex md:justify-end items-center gap-2 text-cream/70 hover:text-cream transition-colors"
                 >
+                  <Instagram size={16} />
                   Instagram
                 </a>
               )}
             </div>
           </div>
-          <div className="border-t border-cream/10 mt-12 pt-6 text-sm text-cream/50">
+
+          <div className="border-t border-cream/10 mt-14 pt-6 text-sm text-cream/50">
             © {new Date().getFullYear()} {businessName}. Todos los derechos
             reservados.
           </div>
         </div>
       </footer>
+
+      <WhatsappFab whatsappNumber={whatsapp} />
     </main>
   )
 }

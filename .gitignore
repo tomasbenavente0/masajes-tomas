@@ -33,3 +33,6 @@ Thumbs.db
 
 # empaquetados sueltos
 *.zip
+
+# configuracion local de Claude Code (permisos de esta maquina)
+.claude/settings.local.json

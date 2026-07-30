@@ -74,12 +74,20 @@ export function SettingsManager({
           value={get('whatsapp_number')}
         />
 
-        <div className="border-t border-ink/10 pt-4 mt-2" />
+        <Divider>Portada</Divider>
         <SField label="Título principal (hero)" name="hero_title" value={get('hero_title')} />
         <SField label="Subtítulo (hero)" name="hero_subtitle" value={get('hero_subtitle')} />
+        <SField
+          label="Foto de portada (URL de imagen)"
+          name="hero_image_url"
+          value={get('hero_image_url')}
+          hint="Si la dejas vacía se muestra un degradado. Pega el link directo de una foto (.jpg o .png)."
+        />
+
+        <Divider>Sobre mí</Divider>
         <div>
           <label className="block text-xs uppercase tracking-wide text-clay mb-1.5">
-            Texto "sobre mí"
+            Texto &quot;sobre mí&quot;
           </label>
           <textarea
             name="about_text"
@@ -88,6 +96,21 @@ export function SettingsManager({
             className="input"
           />
         </div>
+        <SField
+          label="Foto sección &quot;sobre mí&quot; (URL de imagen)"
+          name="about_image_url"
+          value={get('about_image_url')}
+        />
+
+        <Divider>Reserva online</Divider>
+        <SField
+          label="Link de reservas (Cal.com)"
+          name="booking_url"
+          value={get('booking_url')}
+          hint="Ej: https://cal.com/tomas/masaje-60min. Si lo dejas vacío, el bloque de reserva online no aparece en el sitio."
+        />
+
+        <Divider>Contacto</Divider>
         <SField label="Correo" name="email" value={get('email')} />
         <SField label="Instagram (URL)" name="instagram_url" value={get('instagram_url')} />
         <button
@@ -101,14 +124,26 @@ export function SettingsManager({
   )
 }
 
+function Divider({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="border-t border-ink/10 pt-4 mt-2">
+      <p className="text-xs uppercase tracking-wide text-clay font-500">
+        {children}
+      </p>
+    </div>
+  )
+}
+
 function SField({
   label,
   name,
   value,
+  hint,
 }: {
   label: string
   name: string
   value: string
+  hint?: string
 }) {
   return (
     <div>
@@ -116,6 +151,7 @@ function SField({
         {label}
       </label>
       <input name={name} defaultValue={value} className="input" />
+      {hint && <p className="text-xs text-clay/80 mt-1.5">{hint}</p>}
     </div>
   )
 }

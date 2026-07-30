@@ -96,12 +96,14 @@ CREATE TABLE site_settings (
 INSERT INTO site_settings (key, value) VALUES
 ('whatsapp_number', '56900000000'),
 ('business_name', 'Masajes Tomás'),
-('site_published', 'false'),
-('coming_soon_title', 'Muy pronto'),
-('coming_soon_text', 'Estamos preparando algo especial para tu bienestar. Vuelve pronto o escríbenos por WhatsApp.'),
 ('hero_title', 'Bienestar y relajación a tu alcance'),
 ('hero_subtitle', 'Masajes terapéuticos profesionales en Concepción y Parral'),
+-- URL de la foto de portada. Vacío = se muestra un degradado.
+('hero_image_url', ''),
 ('about_text', 'Con años de experiencia, ofrezco masajes personalizados que combinan técnica y cuidado para tu bienestar físico y mental.'),
+('about_image_url', ''),
+-- Link de reservas online (Cal.com). Vacío = el bloque no aparece en el sitio.
+('booking_url', ''),
 ('instagram_url', ''),
 ('email', 'contacto@masajestomas.cl');
 
