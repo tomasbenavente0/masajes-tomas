@@ -48,6 +48,14 @@ export default function AvailabilitySection({
   const selectedCity = cities.find((c) => c.id === cityId)
   const dates = Object.keys(grouped)
 
+  // Cal.com sirve una vista limpia (sin su barra) en /embed. El botón usa la
+  // URL normal; el iframe usa la de embed.
+  const embedSrc = bookingUrl
+    ? bookingUrl.includes('/embed')
+      ? bookingUrl
+      : bookingUrl.replace(/\/+$/, '') + '/embed'
+    : ''
+
   return (
     <section
       id="disponibilidad"
@@ -99,7 +107,7 @@ export default function AvailabilitySection({
 
             <div className="rounded-3xl overflow-hidden border border-ink/5 bg-cream">
               <iframe
-                src={bookingUrl}
+                src={embedSrc}
                 title="Reserva online"
                 loading="lazy"
                 className="w-full h-[38rem] block"
