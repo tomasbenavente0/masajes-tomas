@@ -9,8 +9,10 @@ import type { Post, SiteSetting } from '@/lib/types'
 
 export const revalidate = 60
 
+// El layout ya aplica la plantilla "%s | Masajes Tomás": si la marca se
+// repite acá, el título sale duplicado.
 export const metadata: Metadata = {
-  title: 'Blog | Masajes Tomás',
+  title: 'Blog',
   description:
     'Artículos sobre masoterapia, contracturas, manejo del estrés y cuidado del cuerpo. Escritos desde la consulta en Concepción y Parral.',
   alternates: { canonical: '/blog' },

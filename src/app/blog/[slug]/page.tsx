@@ -31,9 +31,11 @@ export async function generateMetadata({
   params: { slug: string }
 }): Promise<Metadata> {
   const post = await getPost(params.slug)
-  if (!post) return { title: 'Artículo no encontrado | Masajes Tomás' }
+  if (!post) return { title: 'Artículo no encontrado' }
 
-  const title = post.meta_title || `${post.title} | Masajes Tomás`
+  // El layout aplica la plantilla "%s | Masajes Tomás", así que acá el
+  // título va sin la marca para no duplicarla.
+  const title = post.meta_title || post.title
   const description =
     post.meta_description || post.excerpt || undefined
   const url = `/blog/${post.slug}`
@@ -43,7 +45,7 @@ export async function generateMetadata({
     description,
     alternates: { canonical: url },
     openGraph: {
-      title,
+      title: `${title} | Masajes Tomás`,
       description,
       url,
       type: 'article',

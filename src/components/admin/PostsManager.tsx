@@ -209,7 +209,7 @@ function PostForm({
             label="Título para Google"
             name="meta_title"
             defaultValue={post?.meta_title ?? ''}
-            hint="Hasta ~60 caracteres. Vacío = se usa el título del artículo."
+            hint="Hasta ~60 caracteres. Vacío = se usa el título del artículo. No escribas &quot;| Masajes Tomás&quot;: se agrega solo."
           />
           <div>
             <Label>Descripción para Google</Label>
