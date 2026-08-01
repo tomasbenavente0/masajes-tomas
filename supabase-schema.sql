@@ -125,6 +125,30 @@ SELECT s.id, c.id, 'domicilio', 5000
 FROM services s CROSS JOIN cities c WHERE c.slug = 'concepcion';
 
 -- ----------------------------------------------------------
+-- 6.5 BLOG
+-- ----------------------------------------------------------
+CREATE TABLE posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title VARCHAR(200) NOT NULL,
+  slug VARCHAR(200) NOT NULL UNIQUE,
+  -- Resumen para la tarjeta del listado y fallback de meta description
+  excerpt TEXT,
+  -- Cuerpo en Markdown liviano: ##, ###, listas con "-" y **negrita**
+  content TEXT NOT NULL,
+  cover_image_url VARCHAR(500),
+  -- SEO. Vacíos = se usan title y excerpt.
+  meta_title VARCHAR(200),
+  meta_description VARCHAR(300),
+  is_published BOOLEAN DEFAULT true,
+  published_at TIMESTAMPTZ DEFAULT NOW(),
+  reading_minutes INT DEFAULT 3,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_posts_published ON posts(is_published, published_at DESC);
+
+-- ----------------------------------------------------------
 -- 7. ROW LEVEL SECURITY (RLS)
 -- ----------------------------------------------------------
 -- El público solo puede LEER datos activos.
@@ -149,6 +173,12 @@ CREATE POLICY "Auth write services" ON services FOR ALL USING (auth.role() = 'au
 CREATE POLICY "Auth write availability" ON service_availability FOR ALL USING (auth.role() = 'authenticated');
 CREATE POLICY "Auth write slots" ON availability_slots FOR ALL USING (auth.role() = 'authenticated');
 CREATE POLICY "Auth write settings" ON site_settings FOR ALL USING (auth.role() = 'authenticated');
+
+-- Blog: el público solo ve los artículos publicados; el admin ve y edita todo.
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read published posts" ON posts FOR SELECT USING (is_published = true);
+CREATE POLICY "Auth read all posts" ON posts FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Auth write posts" ON posts FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- ============================================================
 -- FIN DEL ESQUEMA

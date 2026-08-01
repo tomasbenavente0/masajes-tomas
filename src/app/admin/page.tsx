@@ -7,8 +7,8 @@ import type {
   City,
   Service,
   ServiceAvailability,
-  AvailabilitySlot,
   SiteSetting,
+  Post,
 } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -24,14 +24,17 @@ export default async function AdminPage() {
     { data: cities },
     { data: services },
     { data: availability },
-    { data: slots },
     { data: settings },
+    { data: posts },
   ] = await Promise.all([
     supabase.from('cities').select('*').order('display_order'),
     supabase.from('services').select('*').order('display_order'),
     supabase.from('service_availability').select('*'),
-    supabase.from('availability_slots').select('*'),
     supabase.from('site_settings').select('*'),
+    supabase
+      .from('posts')
+      .select('*')
+      .order('published_at', { ascending: false }),
   ])
 
   return (
@@ -61,8 +64,8 @@ export default async function AdminPage() {
           cities={(cities as City[]) ?? []}
           services={(services as Service[]) ?? []}
           availability={(availability as ServiceAvailability[]) ?? []}
-          slots={(slots as AvailabilitySlot[]) ?? []}
           settings={(settings as SiteSetting[]) ?? []}
+          posts={(posts as Post[]) ?? []}
         />
       </div>
     </div>

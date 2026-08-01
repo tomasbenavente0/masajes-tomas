@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase-server'
 import { revalidatePath } from 'next/cache'
+import { slugify } from '@/lib/utils'
 
 async function requireAuth() {
   const supabase = createClient()
@@ -95,33 +96,63 @@ export async function toggleCity(formData: FormData) {
   refresh()
 }
 
-// ---------- AGENDA / SLOTS ----------
-export async function addSlot(formData: FormData) {
-  const supabase = await requireAuth()
-  await supabase.from('availability_slots').insert({
-    city_id: formData.get('city_id') as string,
-    modality: formData.get('modality') as string,
-    slot_date: formData.get('slot_date') as string,
-    start_time: formData.get('start_time') as string,
-    end_time: formData.get('end_time') as string,
-    status: 'disponible',
-  })
-  refresh()
+// ---------- BLOG ----------
+function refreshBlog(slug?: string) {
+  revalidatePath('/admin')
+  revalidatePath('/')
+  revalidatePath('/blog')
+  if (slug) revalidatePath(`/blog/${slug}`)
 }
 
-export async function deleteSlot(formData: FormData) {
+export async function savePost(formData: FormData) {
   const supabase = await requireAuth()
-  const id = formData.get('id') as string
-  await supabase.from('availability_slots').delete().eq('id', id)
-  refresh()
+  const id = formData.get('id') as string | null
+
+  const title = (formData.get('title') as string).trim()
+  const rawSlug = (formData.get('slug') as string)?.trim()
+  const slug = slugify(rawSlug || title)
+
+  const payload = {
+    title,
+    slug,
+    excerpt: (formData.get('excerpt') as string)?.trim() || null,
+    content: (formData.get('content') as string) ?? '',
+    cover_image_url: (formData.get('cover_image_url') as string)?.trim() || null,
+    meta_title: (formData.get('meta_title') as string)?.trim() || null,
+    meta_description:
+      (formData.get('meta_description') as string)?.trim() || null,
+    is_published: formData.get('is_published') === 'on',
+    reading_minutes:
+      parseInt(formData.get('reading_minutes') as string) || 3,
+    updated_at: new Date().toISOString(),
+  }
+
+  if (id) {
+    await supabase.from('posts').update(payload).eq('id', id)
+  } else {
+    await supabase.from('posts').insert(payload)
+  }
+  refreshBlog(slug)
 }
 
-export async function updateSlotStatus(formData: FormData) {
+export async function deletePost(formData: FormData) {
   const supabase = await requireAuth()
   const id = formData.get('id') as string
-  const status = formData.get('status') as string
-  await supabase.from('availability_slots').update({ status }).eq('id', id)
-  refresh()
+  const slug = formData.get('slug') as string
+  await supabase.from('posts').delete().eq('id', id)
+  refreshBlog(slug)
+}
+
+export async function togglePostPublished(formData: FormData) {
+  const supabase = await requireAuth()
+  const id = formData.get('id') as string
+  const slug = formData.get('slug') as string
+  const publish = formData.get('publish') === 'true'
+  await supabase
+    .from('posts')
+    .update({ is_published: publish, updated_at: new Date().toISOString() })
+    .eq('id', id)
+  refreshBlog(slug)
 }
 
 // ---------- CONFIGURACIÓN DEL SITIO ----------

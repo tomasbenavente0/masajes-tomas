@@ -43,20 +43,32 @@ Row Level Security: el público solo puede leer, y escribir requiere sesión.
 ## Estructura
 
 ```
-src/app/page.tsx          Sitio público (una sola página con secciones)
+src/app/page.tsx          Home (hero, servicios, agenda, blog, contacto)
+src/app/blog/             Índice del blog y página de artículo
+src/app/sitemap.ts        Sitemap dinámico (incluye los artículos)
+src/app/robots.ts         robots.txt (bloquea /admin)
 src/app/admin/            Panel: page.tsx + actions.ts (server actions)
 src/app/admin/login/      Login con Supabase Auth
 src/middleware.ts         Protege /admin/* y redirige a /admin/login
-src/components/           Secciones públicas + Reveal y WhatsappFab
+src/components/           Secciones públicas + Reveal, WhatsappFab, Markdown
 src/components/admin/     Pestañas del panel
 src/lib/                  Clientes de Supabase, tipos y utilidades
-supabase-schema.sql       Esquema completo (5 tablas + RLS)
+supabase-schema.sql       Esquema completo (6 tablas + RLS)
 ```
+
+## Agenda
+
+La agenda **vive en Cal.com**, no en la base de datos. Ahí se define la
+disponibilidad una sola vez (horario semanal recurrente) y las reservas
+llegan al Google Calendar de Tomás con confirmación automática.
+
+El sitio incrusta el calendario en la sección Agenda leyendo
+`site_settings.booking_url`. La tabla `availability_slots` quedó sin uso.
 
 ## Base de datos
 
-Cinco tablas: `cities`, `services`, `service_availability`,
-`availability_slots` y `site_settings`.
+Seis tablas: `cities`, `services`, `service_availability`, `site_settings`,
+`posts` y `availability_slots` (esta última en desuso).
 
 `site_settings` es un diccionario clave/valor que controla el contenido del
 sitio sin tocar código. Claves que se usan:
@@ -72,6 +84,23 @@ sitio sin tocar código. Claves que se usan:
 | `email` / `instagram_url` | Contacto en el footer |
 
 Todo esto se edita desde **panel admin → Ajustes**.
+
+## Blog y SEO
+
+Los artículos se administran en **panel admin → Blog** (crear, editar,
+publicar/despublicar y eliminar). El cuerpo se escribe en Markdown liviano:
+`##` y `###` para títulos, `- ` para viñetas y `**texto**` para negrita. Lo
+renderiza `src/components/Markdown.tsx`, que parsea a elementos de React —
+sin `dangerouslySetInnerHTML`, así el contenido no puede inyectar HTML.
+
+Cada artículo tiene `meta_title` y `meta_description` propios; si quedan
+vacíos se usan el título y el resumen. Además el sitio genera:
+
+- Etiquetas OpenGraph y Twitter Card por artículo
+- Datos estructurados `BlogPosting` (JSON-LD) para resultados enriquecidos
+- URLs canónicas vía `metadataBase` en el layout
+- `sitemap.xml` dinámico que incluye cada artículo publicado
+- `robots.txt` que permite todo el sitio y bloquea `/admin`
 
 ## Notas de diseño
 

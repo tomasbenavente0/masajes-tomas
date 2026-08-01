@@ -1,23 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { Scissors, MapPin, CalendarDays, Grid3x3, Settings } from 'lucide-react'
+import { Scissors, MapPin, Grid3x3, Settings, Newspaper } from 'lucide-react'
 import type {
   City,
   Service,
   ServiceAvailability,
-  AvailabilitySlot,
   SiteSetting,
+  Post,
 } from '@/lib/types'
 import ServicesManager from './ServicesManager'
-import AgendaManager from './AgendaManager'
 import ServiceCityMatrix from './ServiceCityMatrix'
+import PostsManager from './PostsManager'
 import { CitiesManager, SettingsManager } from './CitiesAndSettings'
 
+// La agenda vive en Cal.com, no acá: ahí se define la disponibilidad una
+// sola vez y las reservas llegan al Google Calendar.
 const TABS = [
   { id: 'servicios', label: 'Servicios', icon: Scissors },
   { id: 'cobertura', label: 'Cobertura', icon: Grid3x3 },
-  { id: 'agenda', label: 'Agenda', icon: CalendarDays },
+  { id: 'blog', label: 'Blog', icon: Newspaper },
   { id: 'ciudades', label: 'Ciudades', icon: MapPin },
   { id: 'ajustes', label: 'Ajustes', icon: Settings },
 ] as const
@@ -28,14 +30,14 @@ export default function AdminTabs({
   cities,
   services,
   availability,
-  slots,
   settings,
+  posts,
 }: {
   cities: City[]
   services: Service[]
   availability: ServiceAvailability[]
-  slots: AvailabilitySlot[]
   settings: SiteSetting[]
+  posts: Post[]
 }) {
   const [tab, setTab] = useState<TabId>('servicios')
 
@@ -71,9 +73,7 @@ export default function AdminTabs({
             availability={availability}
           />
         )}
-        {tab === 'agenda' && (
-          <AgendaManager cities={cities} slots={slots} />
-        )}
+        {tab === 'blog' && <PostsManager posts={posts} />}
         {tab === 'ciudades' && <CitiesManager cities={cities} />}
         {tab === 'ajustes' && <SettingsManager settings={settings} />}
       </div>

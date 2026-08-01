@@ -47,6 +47,22 @@ export interface AvailabilitySlot {
   created_at: string
 }
 
+export interface Post {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string
+  cover_image_url: string | null
+  meta_title: string | null
+  meta_description: string | null
+  is_published: boolean
+  published_at: string
+  reading_minutes: number
+  created_at: string
+  updated_at: string
+}
+
 export interface SiteSetting {
   id: string
   key: string

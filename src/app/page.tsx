@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase-server'
 import PublicNav from '@/components/PublicNav'
 import ServicesSection from '@/components/ServicesSection'
-import AvailabilitySection from '@/components/AvailabilitySection'
+import BookingSection from '@/components/BookingSection'
+import BlogSection from '@/components/BlogSection'
 import Reveal from '@/components/Reveal'
 import WhatsappFab from '@/components/WhatsappFab'
 import { whatsappLink } from '@/lib/utils'
@@ -9,9 +10,6 @@ import {
   MapPin,
   MessageCircle,
   Sparkles,
-  HeartPulse,
-  Moon,
-  Activity,
   Home,
   Clock,
   Instagram,
@@ -21,8 +19,8 @@ import type {
   City,
   Service,
   ServiceAvailability,
-  AvailabilitySlot,
   SiteSetting,
+  Post,
 } from '@/lib/types'
 
 export const revalidate = 60 // refresca datos cada 60s
@@ -40,17 +38,19 @@ export default async function HomePage() {
     { data: cities },
     { data: services },
     { data: availability },
-    { data: slots },
     { data: settings },
+    { data: posts },
   ] = await Promise.all([
     supabase.from('cities').select('*').order('display_order'),
     supabase.from('services').select('*').order('display_order'),
     supabase.from('service_availability').select('*'),
-    supabase
-      .from('availability_slots')
-      .select('*')
-      .gte('slot_date', new Date().toISOString().slice(0, 10)),
     supabase.from('site_settings').select('*'),
+    supabase
+      .from('posts')
+      .select('*')
+      .eq('is_published', true)
+      .order('published_at', { ascending: false })
+      .limit(3),
   ])
 
   const cfg = settingsMap((settings as SiteSetting[]) ?? [])
@@ -63,29 +63,6 @@ export default async function HomePage() {
   const cityNames = activeCities.map((c) => c.name).join(' y ')
 
   const heroMsg = 'Hola! Vengo desde tu sitio web y quiero agendar un masaje.'
-
-  const benefitCards = [
-    {
-      icon: HeartPulse,
-      title: 'Alivia el estrés',
-      text: 'Reduce el cortisol y la tensión acumulada, dejándote en calma profunda.',
-    },
-    {
-      icon: Activity,
-      title: 'Libera músculos',
-      text: 'Deshace contracturas y devuelve tu rango natural de movimiento.',
-    },
-    {
-      icon: Moon,
-      title: 'Mejora el sueño',
-      text: 'Un cuerpo relajado descansa mejor y se recupera más rápido.',
-    },
-    {
-      icon: Sparkles,
-      title: 'Renueva energía',
-      text: 'Activa la circulación y te devuelve la vitalidad del día a día.',
-    },
-  ]
 
   return (
     <main id="top" className="overflow-x-hidden">
@@ -217,37 +194,8 @@ export default async function HomePage() {
         whatsappNumber={whatsapp}
       />
 
-      {/* ---------------- BENEFICIOS ---------------- */}
-      <section id="beneficios" className="relative py-24 bg-sand overflow-hidden">
-        <div className="blob w-[30rem] h-[30rem] bg-terra/10 -bottom-40 -left-32" />
-        <div className="container-tight relative">
-          <Reveal>
-            <p className="eyebrow mb-4">
-              <span className="w-6 h-px bg-terra" />
-              Por qué un masaje
-            </p>
-            <h2 className="font-display text-4xl md:text-5xl text-ink mb-14 max-w-2xl leading-tight">
-              Beneficios que sientes desde la primera sesión
-            </h2>
-          </Reveal>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {benefitCards.map((b, i) => (
-              <Reveal key={b.title} delay={i * 80}>
-                <div className="card h-full p-7 hover:shadow-lift hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-12 h-12 rounded-2xl bg-terra-soft flex items-center justify-center mb-5">
-                    <b.icon size={22} className="text-terra-dark" />
-                  </div>
-                  <h3 className="font-display text-xl text-ink mb-2">
-                    {b.title}
-                  </h3>
-                  <p className="text-sm text-clay leading-relaxed">{b.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ---------------- BLOG ---------------- */}
+      <BlogSection posts={(posts as Post[]) ?? []} />
 
       {/* ---------------- SOBRE MÍ ---------------- */}
       <section className="py-24 bg-cream">
@@ -298,12 +246,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- DISPONIBILIDAD ---------------- */}
-      <AvailabilitySection
-        cities={(cities as City[]) ?? []}
-        slots={(slots as AvailabilitySlot[]) ?? []}
-        whatsappNumber={whatsapp}
+      {/* ---------------- AGENDA (Cal.com) ---------------- */}
+      <BookingSection
         bookingUrl={cfg.booking_url || ''}
+        whatsappNumber={whatsapp}
       />
 
       {/* ---------------- CONTACTO / FOOTER ---------------- */}

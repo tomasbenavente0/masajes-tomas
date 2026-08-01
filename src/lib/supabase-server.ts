@@ -1,5 +1,18 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
+
+/**
+ * Cliente sin cookies, para contextos que corren fuera de un request:
+ * generateStaticParams, sitemap y similares. Solo lee datos públicos.
+ */
+export function createPublicClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { persistSession: false } }
+  )
+}
 
 export function createClient() {
   const cookieStore = cookies()

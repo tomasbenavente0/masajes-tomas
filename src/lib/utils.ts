@@ -20,6 +20,26 @@ export function formatTime(timeStr: string): string {
   return timeStr.slice(0, 5)
 }
 
+/** "2026-07-29T12:00:00Z" -> "29 de julio de 2026" */
+export function formatPostDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('es-CL', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+/** Convierte un título en un slug apto para URL. */
+export function slugify(text: string): string {
+  return text
+    .normalize('NFD') // separa la letra de su tilde para poder borrarla
+    .replace(/[̀-ͯ]/g, '') // saca tildes
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 200)
+}
+
 export function whatsappLink(number: string, message: string): string {
   const clean = number.replace(/\D/g, '')
   return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`

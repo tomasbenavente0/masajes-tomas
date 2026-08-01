@@ -22,10 +22,10 @@ export default function PublicNav({
   }, [])
 
   const links = [
-    { href: '#servicios', label: 'Servicios' },
-    { href: '#beneficios', label: 'Beneficios' },
-    { href: '#disponibilidad', label: 'Agenda' },
-    { href: '#contacto', label: 'Contacto' },
+    { href: '/#servicios', label: 'Servicios' },
+    { href: '/#disponibilidad', label: 'Agenda' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/#contacto', label: 'Contacto' },
   ]
 
   const navMsg = `Hola! Vengo desde tu sitio web y quiero agendar un masaje.`
@@ -39,7 +39,7 @@ export default function PublicNav({
       }`}
     >
       <nav className="container-tight flex items-center justify-between py-4">
-        <a href="#top" className="flex items-center gap-2.5 group">
+        <a href="/" className="flex items-center gap-2.5 group">
           <span className="w-9 h-9 rounded-full bg-terra flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
             <span className="font-display text-cream text-lg leading-none">
               {businessName.trim().charAt(0) || 'M'}
